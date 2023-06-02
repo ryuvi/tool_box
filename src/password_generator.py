@@ -2,6 +2,7 @@ import customtkinter as ctk
 import tkinter as tk
 import string as stri
 import random as rand
+import pyperclip as pc
 
 class Password_Output(ctk.CTkToplevel):
     def __init__(self, text, *args, **kwargs):
@@ -10,6 +11,7 @@ class Password_Output(ctk.CTkToplevel):
 
         self.label = ctk.CTkLabel(self, text=self.text)
         self.label.pack(expand=True, fill='both', padx=10, pady=10)
+        self.label.configure(font=("Comic Sans MS", 20))
         self.button = ctk.CTkButton(self, text="Close", command=self.destroy)
         self.button.pack(expand=True, fill='both', padx=10, pady=10)
 
@@ -31,13 +33,13 @@ class Password_Generator(ctk.CTkToplevel):
         self.check_frame = ctk.CTkFrame(self)
         self.check_frame.pack(side="top", padx=10, pady=20, ipadx=10, ipady=10)
         self.number_str = tk.StringVar(value="on")
-        self.number_check = ctk.CTkCheckBox(self.check_frame, text="Add Numbers", variable=self.number_str, onvalue="on", offvalue="off")
+        self.number_check = ctk.CTkCheckBox(self.check_frame, text="Add Numbers", variable=self.number_str, onvalue="on", offvalue="off", command=self.change_number_state)
         self.number_check.pack(side="left", expand=True, fill='both')
         self.symbol_str = tk.StringVar(value="on")
-        self.symbol_check = ctk.CTkCheckBox(self.check_frame, text="Add Symbols", variable=self.symbol_str, onvalue="on", offvalue="off")
+        self.symbol_check = ctk.CTkCheckBox(self.check_frame, text="Add Symbols", variable=self.symbol_str, onvalue="on", offvalue="off", command=self.change_symbol_state)
         self.symbol_check.pack(side="left", expand=True, fill='both')
         self.capitalize_str = tk.StringVar(value="on")
-        self.capitalize_check = ctk.CTkCheckBox(self.check_frame, text="Add Caps", variable=self.capitalize_str, onvalue="on", offvalue="off")
+        self.capitalize_check = ctk.CTkCheckBox(self.check_frame, text="Add Caps", variable=self.capitalize_str, onvalue="on", offvalue="off", command=self.change_capitalize_state)
         self.capitalize_check.pack(side="left", expand=True, fill='both')
 
         self.range_frame = ctk.CTkFrame(self)
@@ -93,31 +95,55 @@ class Password_Generator(ctk.CTkToplevel):
     def update_caps_value(self, value):
         self.caps_label.configure(text=int(value))
 
+    def change_number_state(self):
+        if self.number_str.get() == 'on':
+            self.number_slider.configure(state='disabled')
+        else:
+            self.number_slider.configure(state='normal')
+
+    def change_symbol_state(self):
+        if self.symbol_str.get() == 'on':
+            self.symbol_slider.configure(state='disabled')
+        else:
+            self.symbol_slider.configure(state='normal')
+
+    def change_capitalize_state(self):
+        if self.capitalize_str.get() == 'on':
+            self.caps_slider.configure(state='disabled')
+        else:
+            self.caps_slider.configure(state='normal')
+
     def generate_password(self):
         font = stri.ascii_lowercase
+        count = 0
 
         if self.number_str.get() == 'on':
             font += stri.digits
+            count += 1
 
-        if self.number_str.get() == 'on':
+        if self.symbol_str.get() == 'on':
             font += stri.punctuation
+            count += 1
         
-        if self.number_str.get() == 'on':
+        if self.capitalize_str.get() == 'on':
             font += stri.ascii_uppercase
+            count += 1
 
-        def get_random():
-            return rand.choice(font)
-        
-        idx = 0
-        password = ''
-        
-        while idx < self.length_var.get():
-            password += get_random()
-            idx += 1
+        def gen():
+            idx = 0
+            password = ''
+            
+            for i in range(self.length_var.get()):
+                password += rand.choice(font)
 
+            return password
+        
+        password = gen()
+        
         with open("Passwords.txt", 'a') as f:
             f.write(f'{self.title_str.get()}: {password}\n')
 
+        pc.copy(password)
         pass_output = Password_Output(password)
         pass_output.grab_set()
 

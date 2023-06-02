@@ -7,7 +7,7 @@ class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title("Vicente's Tools")
-        self.geometry("500x300")
+        # self.geometry("500x300")
         self.height = 300
         self.width = 500
 
@@ -28,14 +28,14 @@ class App(ctk.CTk):
     def open_password_generator(self):
         if self.password_generator is None or not self.password_generator.winfo_exists():
             self.password_generator = pg.Password_Generator(self)
-            self.password_generator.grab_set()
+            self.password_generator.focus()
         else:
             self.password_generator.focus()
 
     def open_timestamp_converter(self):
         if self.timestamp_converter is None or not self.timestamp_converter.winfo_exists():
             self.timestamp_converter = tc.TimeStampConverter(self)
-            self.timestamp_converter.grab_set()
+            self.timestamp_converter.focus()
         else:
             self.timestamp_converter.focus()
 
