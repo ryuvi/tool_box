@@ -3,6 +3,7 @@ import tkinter as tk
 import string as stri
 import random as rand
 import pyperclip as pc
+import dbqueries as db
 
 class Password_Output(ctk.CTkToplevel):
     def __init__(self, text, *args, **kwargs):
@@ -140,8 +141,17 @@ class Password_Generator(ctk.CTkToplevel):
         
         password = gen()
         
-        with open("Passwords.txt", 'a') as f:
-            f.write(f'{self.title_str.get()}: {password}\n')
+        database = db.Database()
+        # TODO: break if != 0
+        database.connect_db()
+
+        if database.select_password(title=self.title_str.get()) not in (None, ''):
+            database.insert_password(title=self.title_str.get(), password=password)
+        else:
+            database.update_password(title=self.title_str.get(), password=password)
+
+        # with open("Passwords.txt", 'a') as f:
+        #     f.write(f'{self.title_str.get()}: {password}\n')
 
         pc.copy(password)
         pass_output = Password_Output(password)
